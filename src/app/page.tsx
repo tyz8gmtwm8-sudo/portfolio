@@ -8,6 +8,8 @@ import TypingText from "@/components/TypingText";
 import Reveal from "@/components/Reveal";
 import TiltCard from "@/components/TiltCard";
 import MagneticButton from "@/components/MagneticButton";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { LabeledLink, RichT, T, UpdatedAgo } from "@/components/LanguageProvider";
 import styles from "./page.module.css";
 
 const GITHUB_URL = `https://github.com/${GITHUB_USERNAME}`;
@@ -22,16 +24,6 @@ const LANGUAGE_COLORS: Record<string, string> = {
 };
 
 const SKILLS = ["Next.js", "React", "TypeScript", "JavaScript", "HTML", "CSS", "Supabase", "Git"];
-
-// 「3日前に更新」のような文字を作る
-function timeAgo(date: string) {
-  const days = Math.floor((Date.now() - new Date(date).getTime()) / 86_400_000);
-  if (days <= 0) return "today";
-  if (days === 1) return "yesterday";
-  if (days < 30) return `${days} days ago`;
-  const months = Math.floor(days / 30);
-  return months === 1 ? "1 month ago" : `${months} months ago`;
-}
 
 // サーバー側でGitHubのデータを取得してからページを作る（Server Component）
 export default async function Home() {
@@ -52,11 +44,14 @@ export default async function Home() {
           <span className={styles.logoBracket}>&lt;</span>dev
           <span className={styles.logoBracket}>/&gt;</span>
         </a>
-        <nav className={styles.links}>
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="#github">GitHub</a>
-        </nav>
+        <div className={styles.navRight}>
+          <nav className={styles.links}>
+            <a href="#about"><T k="nav.about" /></a>
+            <a href="#projects"><T k="nav.projects" /></a>
+            <a href="#github"><T k="nav.github" /></a>
+          </nav>
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <main id="top" className={styles.main}>
@@ -64,7 +59,7 @@ export default async function Home() {
         <section className={styles.hero}>
           <Reveal>
             <p className={styles.eyebrow}>
-              <span className={styles.wave}>👋</span> Hello, I&apos;m
+              <span className={styles.wave}>👋</span> <T k="hero.hello" />
             </p>
           </Reveal>
           <Reveal delay={100}>
@@ -74,35 +69,33 @@ export default async function Home() {
           </Reveal>
           <Reveal delay={200}>
             <p className={styles.subtitle}>
-              I build <TypingText words={["web apps.", "with Next.js.", "useful tools.", "things that feel alive."]} />
+              <T k="hero.buildPrefix" />
+              <TypingText />
             </p>
           </Reveal>
           <Reveal delay={300}>
             <div className={styles.actions}>
-              <MagneticButton href="#projects">View Projects →</MagneticButton>
+              <MagneticButton href="#projects"><T k="hero.viewProjects" /></MagneticButton>
               <MagneticButton href={GITHUB_URL} variant="ghost" external>
-                GitHub Profile
+                <T k="hero.githubProfile" />
               </MagneticButton>
             </div>
           </Reveal>
-          <a href="#about" className={styles.scrollHint} aria-label="Scroll down">
+          <LabeledLink href="#about" className={styles.scrollHint} labelKey="hero.scrollDown">
             <span />
-          </a>
+          </LabeledLink>
         </section>
 
         {/* ===== 自己紹介 ===== */}
         <section id="about" className={styles.section}>
           <Reveal>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.num}>01.</span> About Me
+              <span className={styles.num}>01.</span> <T k="about.title" />
             </h2>
           </Reveal>
           <Reveal delay={100}>
             <p className={styles.text}>
-              I&apos;m a developer who loves turning ideas into real, working apps. Right now
-              I&apos;m focused on building with <strong>Next.js</strong> and{" "}
-              <strong>TypeScript</strong> — from small to-do apps to a shift-scheduling
-              system for care facilities.
+              <RichT k="about.text" />
             </p>
           </Reveal>
           <div className={styles.skills}>
@@ -118,14 +111,14 @@ export default async function Home() {
         <section id="projects" className={styles.section}>
           <Reveal>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.num}>02.</span> Projects I&apos;m Working On
+              <span className={styles.num}>02.</span> <T k="projects.title" />
             </h2>
           </Reveal>
 
           {repos.length === 0 ? (
             <p className={styles.text}>
-              Couldn&apos;t load projects right now.{" "}
-              <a href={GITHUB_URL} className={styles.inlineLink}>See them on GitHub →</a>
+              <T k="projects.error" />{" "}
+              <a href={GITHUB_URL} className={styles.inlineLink}><T k="projects.seeOnGithub" /></a>
             </p>
           ) : (
             <div className={styles.grid}>
@@ -136,13 +129,13 @@ export default async function Home() {
                       <span className={styles.folder} aria-hidden="true">📁</span>
                       <div className={styles.cardLinks}>
                         {repo.homepage && (
-                          <a href={repo.homepage} target="_blank" rel="noopener noreferrer" aria-label="Live demo">
+                          <LabeledLink href={repo.homepage} target="_blank" rel="noopener noreferrer" labelKey="projects.liveDemo">
                             ↗
-                          </a>
+                          </LabeledLink>
                         )}
-                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer" aria-label="Source code">
+                        <LabeledLink href={repo.html_url} target="_blank" rel="noopener noreferrer" labelKey="projects.sourceCode">
                           {"</>"}
-                        </a>
+                        </LabeledLink>
                       </div>
                     </div>
                     <h3 className={styles.cardTitle}>
@@ -151,7 +144,7 @@ export default async function Home() {
                       </a>
                     </h3>
                     <p className={styles.cardDesc}>
-                      {repo.description ?? "No description yet — work in progress 🚧"}
+                      {repo.description ?? <T k="projects.noDescription" />}
                     </p>
                     <div className={styles.cardMeta}>
                       {repo.language && (
@@ -164,7 +157,7 @@ export default async function Home() {
                         </span>
                       )}
                       <span>★ {repo.stargazers_count}</span>
-                      <span className={styles.updated}>Updated {timeAgo(repo.updated_at)}</span>
+                      <span className={styles.updated}><UpdatedAgo date={repo.updated_at} /></span>
                     </div>
                   </TiltCard>
                 </Reveal>
@@ -177,7 +170,7 @@ export default async function Home() {
         <section id="github" className={styles.section}>
           <Reveal>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.num}>03.</span> GitHub
+              <span className={styles.num}>03.</span> <T k="github.title" />
             </h2>
           </Reveal>
           <Reveal delay={100}>
@@ -197,9 +190,9 @@ export default async function Home() {
                 <h3 className={styles.profileName}>@{GITHUB_USERNAME}</h3>
                 {user?.bio && <p className={styles.text}>{user.bio}</p>}
                 <div className={styles.stats}>
-                  <div><strong>{user?.public_repos ?? repos.length}</strong><span>Repos</span></div>
-                  <div><strong>{user?.followers ?? 0}</strong><span>Followers</span></div>
-                  <div><strong>{user?.following ?? 0}</strong><span>Following</span></div>
+                  <div><strong>{user?.public_repos ?? repos.length}</strong><span><T k="github.repos" /></span></div>
+                  <div><strong>{user?.followers ?? 0}</strong><span><T k="github.followers" /></span></div>
+                  <div><strong>{user?.following ?? 0}</strong><span><T k="github.following" /></span></div>
                 </div>
 
                 {/* 言語の割合バー */}
@@ -229,7 +222,7 @@ export default async function Home() {
                 )}
 
                 <MagneticButton href={GITHUB_URL} external>
-                  Follow on GitHub
+                  <T k="github.follow" />
                 </MagneticButton>
               </div>
             </TiltCard>
@@ -238,7 +231,7 @@ export default async function Home() {
       </main>
 
       <footer className={styles.footer}>
-        Built with Next.js &amp; CSS · © {new Date().getFullYear()}
+        <T k="footer.builtWith" /> · © {new Date().getFullYear()}
       </footer>
     </>
   );

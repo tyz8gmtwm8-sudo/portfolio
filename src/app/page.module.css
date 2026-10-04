@@ -35,6 +35,12 @@
   display: flex;
   gap: clamp(14px, 3vw, 32px);
 }
+/* リンクと言語メニューを横に並べる */
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 3vw, 32px);
+}
 /* リンクの下線がホバーで左から伸びる */
 .links a {
   position: relative;
@@ -393,6 +399,18 @@
 }
 
 /* スマホ幅ではナビのリンクを少し小さく */
+/* スマホ幅では、ナビが入りきらないときに2段に折り返す */
+@media (max-width: 600px) {
+  .nav {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .navRight {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+}
+
 @media (max-width: 480px) {
   .links a {
     font-size: 0.85rem;

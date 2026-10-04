@@ -2,8 +2,16 @@
 
 // 文字を1文字ずつ打ち込んで、消して、次の言葉へ…を繰り返すアニメーション
 import { useEffect, useState } from "react";
+import { TYPING_WORDS } from "@/i18n/dictionaries";
+import { useLanguage } from "./LanguageProvider";
 
-export default function TypingText({ words }: { words: string[] }) {
+export default function TypingText() {
+  const { lang } = useLanguage();
+  // key を変えると部品が作り直されるので、言語が変わったら最初の言葉から打ち直しになる
+  return <Typer key={lang} words={TYPING_WORDS[lang]} />;
+}
+
+function Typer({ words }: { words: string[] }) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");
   const [deleting, setDeleting] = useState(false);

@@ -238,6 +238,50 @@ a {
   opacity: 1;
 }
 
+/* ===== 言語の切り替えメニュー ===== */
+.lang-switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.85rem;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+.lang-switcher:hover,
+.lang-switcher:focus-within {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.lang-switcher select {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+}
+/* 選択肢の一覧は暗い背景で表示する */
+.lang-switcher option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* 見た目には出さず、読み上げソフトにだけ伝える文字 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* 「動きを減らす」設定の人にはアニメーションを止める（アクセシビリティ） */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

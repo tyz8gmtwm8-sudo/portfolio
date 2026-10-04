@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import LanguageProvider from "@/components/LanguageProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,7 +25,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         {/* 全ページ共通の動く背景 */}
         <AnimatedBackground />
-        {children}
+        {/* 選んだ言語をサイト全体で使えるようにする */}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );
