@@ -126,7 +126,7 @@ export default async function Home() {
                 <Reveal key={repo.id} delay={i * 100}>
                   <TiltCard className={styles.card}>
                     <div className={styles.cardTop}>
-                      <span className={styles.folder} aria-hidden="true">✦</span>
+                      <span className={styles.folder} aria-hidden="true" />
                       <div className={styles.cardLinks}>
                         {repo.homepage && (
                           <LabeledLink href={repo.homepage} target="_blank" rel="noopener noreferrer" labelKey="projects.liveDemo">

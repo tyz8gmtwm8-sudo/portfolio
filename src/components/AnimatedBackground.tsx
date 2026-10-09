@@ -1,29 +1,25 @@
 "use client";
 
-// 動く背景：ふんわりした光のかたまり（CSS）＋ 舞い落ちる花びらときらめく光（canvas）
+// 動く背景：ふんわりした光のかたまり（CSS）＋ 光の中を漂う細かいちり（canvas）
 import { useEffect, useRef } from "react";
 
-// 花びら1枚の情報
-type Petal = {
+// ちりの粒1つの情報
+type Mote = {
   x: number;
   y: number;
-  size: number;     // 大きさ
-  speedY: number;   // 落ちる速さ
+  r: number;        // 大きさ
+  speedY: number;   // 昇っていく速さ
   sway: number;     // 左右にゆれる幅
-  phase: number;    // ゆれのタイミング（花びらごとにずらす）
-  angle: number;    // 傾き
-  spin: number;     // 回転の速さ
-  color: string;
+  phase: number;    // ゆれ・明るさのタイミング（粒ごとにずらす）
+  color: string;    // 色（"r, g, b" の形。明るさは描くときに決める）
+  baseAlpha: number;
 };
 
-// きらめく光の粒
-type Sparkle = { x: number; y: number; r: number; phase: number };
-
-const PETAL_COLORS = [
-  "rgba(232, 180, 196, 0.55)", // 桜ピンク
-  "rgba(214, 160, 180, 0.45)", // くすみピンク
-  "rgba(240, 212, 220, 0.7)",  // 淡いブラッシュ
-  "rgba(218, 190, 140, 0.4)",  // シャンパンゴールド
+const MOTE_COLORS = [
+  "28, 26, 23",    // 黒
+  "28, 26, 23",    // 黒（多めに出るよう2回入れている）
+  "140, 123, 104", // トープ
+  "156, 127, 85",  // 真鍮色
 ];
 
 export default function AnimatedBackground() {
@@ -39,22 +35,20 @@ export default function AnimatedBackground() {
 
     let width = 0;
     let height = 0;
-    let petals: Petal[] = [];
-    let sparkles: Sparkle[] = [];
+    let motes: Mote[] = [];
     const mouse = { x: -9999, y: -9999 };
     let frameId = 0;
     let time = 0;
 
-    const makePetal = (startAbove: boolean): Petal => ({
+    const makeMote = (startBelow: boolean): Mote => ({
       x: Math.random() * width,
-      y: startAbove ? -20 : Math.random() * height,
-      size: Math.random() * 6 + 5,
-      speedY: Math.random() * 0.35 + 0.2,
-      sway: Math.random() * 0.6 + 0.2,
+      y: startBelow ? height + 10 : Math.random() * height,
+      r: Math.random() * 1.3 + 0.4,
+      speedY: Math.random() * 0.18 + 0.05,
+      sway: Math.random() * 0.25 + 0.05,
       phase: Math.random() * Math.PI * 2,
-      angle: Math.random() * Math.PI * 2,
-      spin: (Math.random() - 0.5) * 0.02,
-      color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
+      color: MOTE_COLORS[Math.floor(Math.random() * MOTE_COLORS.length)],
+      baseAlpha: Math.random() * 0.25 + 0.15,
     });
 
     const resize = () => {
@@ -65,66 +59,40 @@ export default function AnimatedBackground() {
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // 画面の広さに合わせて数を決める（多すぎるとうるさいので控えめに）
-      const petalCount = Math.min(36, Math.floor((width * height) / 32000));
-      petals = Array.from({ length: petalCount }, () => makePetal(false));
-      const sparkleCount = Math.min(40, Math.floor((width * height) / 28000));
-      sparkles = Array.from({ length: sparkleCount }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        r: Math.random() * 1.4 + 0.6,
-        phase: Math.random() * Math.PI * 2,
-      }));
-    };
-
-    // 花びらの形（2本の曲線で、先が少しとがった楕円を描く）
-    const drawPetal = (p: Petal) => {
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.angle);
-      ctx.beginPath();
-      ctx.moveTo(0, -p.size);
-      ctx.quadraticCurveTo(p.size * 0.9, 0, 0, p.size);
-      ctx.quadraticCurveTo(-p.size * 0.9, 0, 0, -p.size);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-      ctx.restore();
+      // 画面の広さに合わせて数を決める
+      const count = Math.min(80, Math.floor((width * height) / 14000));
+      motes = Array.from({ length: count }, () => makeMote(false));
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       time += 0.016;
 
-      // きらめく光：ゆっくり明るくなったり暗くなったりする
-      for (const s of sparkles) {
-        const alpha = 0.15 + 0.45 * (0.5 + 0.5 * Math.sin(time * 1.2 + s.phase));
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200, 165, 100, ${alpha})`;
-        ctx.fill();
-      }
-
-      for (const p of petals) {
-        // マウスの近くの花びらは、ふわっとよける
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
+      for (const m of motes) {
+        // マウスの近くの粒は、ふわっとよける
+        const dx = m.x - mouse.x;
+        const dy = m.y - mouse.y;
         const dist = Math.hypot(dx, dy);
-        if (dist < 110 && dist > 0) {
-          p.x += (dx / dist) * 1.2;
-          p.y += (dy / dist) * 1.2;
+        if (dist < 100 && dist > 0) {
+          m.x += (dx / dist) * 0.9;
+          m.y += (dy / dist) * 0.9;
         }
 
-        // 下に落ちながら、左右にゆらゆら揺れて回る
-        p.y += p.speedY;
-        p.x += Math.sin(time + p.phase) * p.sway;
-        p.angle += p.spin;
+        // ゆっくり上へ昇りながら、左右にかすかに揺れる
+        m.y -= m.speedY;
+        m.x += Math.sin(time * 0.6 + m.phase) * m.sway;
 
-        // 画面の下まで落ちたら、上からまた降らせる
-        if (p.y > height + 20) Object.assign(p, makePetal(true));
-        if (p.x < -20) p.x = width + 20;
-        if (p.x > width + 20) p.x = -20;
+        // 画面の上まで行ったら、下からまた昇らせる
+        if (m.y < -10) Object.assign(m, makeMote(true));
+        if (m.x < -10) m.x = width + 10;
+        if (m.x > width + 10) m.x = -10;
 
-        drawPetal(p);
+        // 明るさがゆっくり変わって、光の中でまたたくように見せる
+        const alpha = m.baseAlpha * (0.6 + 0.4 * Math.sin(time + m.phase));
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${m.color}, ${alpha})`;
+        ctx.fill();
       }
 
       if (!reduceMotion) frameId = requestAnimationFrame(draw);

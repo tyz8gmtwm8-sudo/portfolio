@@ -1,15 +1,15 @@
 /* ===== 色などの共通設定（CSS変数） =====
-   コンセプト：白〜アイボリーの紙に、くすみピンクとゴールドを差した上品なデザイン */
+   コンセプト：ベージュの紙に黒のインクで描いたような、シックで落ち着いたデザイン */
 :root {
-  --bg: #fbf7f4;          /* アイボリー（少し温かみのある白） */
-  --surface: rgba(255, 255, 255, 0.72); /* カードなどの白い面（少し透ける） */
-  --border: rgba(158, 95, 118, 0.18);   /* ピンクがかった細い線 */
-  --text: #3e3236;        /* 真っ黒ではない、深いプラムブラウン */
-  --muted: #86767b;       /* 説明文などの控えめな文字 */
-  --rose: #c48a9e;        /* くすみピンク（メインの色） */
-  --rose-deep: #9e5f76;   /* 濃いくすみピンク（文字やボタン用） */
-  --gold: #b8975a;        /* シャンパンゴールド（アクセント） */
-  --blush: #f3dde3;       /* 淡いブラッシュピンク（背景の光など） */
+  --bg: #ede6db;          /* ベージュ */
+  --surface: rgba(247, 243, 236, 0.72); /* カードなどの明るい面（少し透ける） */
+  --border: rgba(28, 26, 23, 0.14);     /* 黒をうすくした細い線 */
+  --text: #1c1a17;        /* 少し温かみのある黒 */
+  --muted: #6b6359;       /* 説明文などの控えめな文字（グレージュ） */
+  --ink: #1c1a17;         /* 黒（ボタンや強調） */
+  --taupe: #8c7b68;       /* トープ（黒とベージュの間の色） */
+  --gold: #9c7f55;        /* くすんだ真鍮色（ごく少しだけ使う） */
+  --sand: #d9cdbb;        /* 濃いめのベージュ（背景の光やバーなど） */
 
   /* フォント：見出しは明朝体、本文はやわらかいゴシック体 */
   --font-display: var(--font-cormorant), var(--font-shippori), "Hiragino Mincho ProN", serif;
@@ -43,8 +43,8 @@ a {
 }
 
 ::selection {
-  background: var(--blush);
-  color: var(--rose-deep);
+  background: var(--sand);
+  color: var(--ink);
 }
 
 /* ===== 動く背景 ===== */
@@ -56,7 +56,7 @@ a {
   pointer-events: none;
 }
 
-/* ふんわりした光のかたまり（ピンク・ゴールド・ブラッシュ） */
+/* ふんわりした光のかたまり（濃淡のあるベージュ） */
 .blob {
   position: absolute;
   width: 45vmax;
@@ -66,9 +66,9 @@ a {
   opacity: 0.55;
   animation: float 28s ease-in-out infinite alternate;
 }
-.blob1 { background: var(--blush); top: -15%; left: -10%; }
-.blob2 { background: #f1e3c8;      bottom: -20%; right: -10%; animation-delay: -9s; animation-duration: 32s; }
-.blob3 { background: #ecd3e0;      top: 40%; left: 40%; width: 30vmax; height: 30vmax; opacity: 0.45; animation-delay: -16s; }
+.blob1 { background: var(--sand); top: -15%; left: -10%; }
+.blob2 { background: #e3d5bf;      bottom: -20%; right: -10%; animation-delay: -9s; animation-duration: 32s; }
+.blob3 { background: #d6c8b3;      top: 40%; left: 40%; width: 30vmax; height: 30vmax; opacity: 0.45; animation-delay: -16s; }
 
 @keyframes float {
   0%   { transform: translate(0, 0) scale(1); }
@@ -81,7 +81,7 @@ a {
 .grid {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(158, 95, 118, 0.07) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(28, 26, 23, 0.07) 1px, transparent 1px);
   background-size: 28px 28px;
   mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
 }
@@ -94,14 +94,14 @@ a {
   height: 100%;
 }
 
-/* ===== ピンクとゴールドがゆっくり流れる文字 ===== */
+/* ===== 黒い文字に、光沢がゆっくり横切る ===== */
 .gradient-text {
-  background: linear-gradient(90deg, var(--rose-deep), var(--rose), var(--gold), var(--rose-deep));
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink) 40%, var(--taupe) 50%, var(--ink) 60%, var(--ink) 100%);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 10s linear infinite;
+  animation: shimmer 12s linear infinite;
 }
 @keyframes shimmer {
   to { background-position: 300% 0; }
@@ -109,7 +109,7 @@ a {
 
 /* ===== タイピング文字のカーソル ===== */
 .typing {
-  color: var(--rose-deep);
+  color: var(--taupe);
   font-family: var(--font-display);
   font-style: italic;
 }
@@ -143,10 +143,11 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 13px 30px;
-  border-radius: 999px;
+  padding: 14px 32px;
+  border-radius: 2px;
+  font-size: 0.88rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.14em;
   overflow: hidden;
   isolation: isolate;
   transition: transform 0.2s ease-out, box-shadow 0.4s ease, color 0.4s ease;
@@ -156,14 +157,14 @@ a {
   z-index: 2;
 }
 
-/* メインボタン：くすみピンクのグラデーション + ホバーでやわらかく光る */
+/* メインボタン：黒地にベージュの文字 + ホバーで影が深くなる */
 .btn-primary {
-  color: white;
-  background: linear-gradient(135deg, var(--rose-deep), var(--rose));
-  box-shadow: 0 8px 20px -12px rgba(158, 95, 118, 0.6);
+  color: var(--bg);
+  background: var(--ink);
+  box-shadow: 0 8px 20px -14px rgba(28, 26, 23, 0.7);
 }
 .btn-primary:hover {
-  box-shadow: 0 14px 34px -10px rgba(158, 95, 118, 0.55), 0 0 18px rgba(184, 151, 90, 0.3);
+  box-shadow: 0 16px 32px -14px rgba(28, 26, 23, 0.6);
 }
 
 /* ホバーすると光の筋がスーッと横切る */
@@ -174,7 +175,7 @@ a {
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  background: linear-gradient(120deg, transparent, rgba(255, 252, 246, 0.35), transparent);
   transform: skewX(-20deg);
   z-index: 1;
 }
@@ -185,10 +186,10 @@ a {
   to { left: 125%; }
 }
 
-/* 枠線ボタン：ホバーで淡いピンクに染まる */
+/* 枠線ボタン：ホバーで黒く塗りつぶされる */
 .btn-ghost {
-  color: var(--rose-deep);
-  border: 1px solid var(--rose);
+  color: var(--ink);
+  border: 1px solid var(--ink);
   background: var(--surface);
   backdrop-filter: blur(8px);
 }
@@ -196,11 +197,14 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--blush);
+  background: var(--ink);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
   z-index: 0;
+}
+.btn-ghost:hover {
+  color: var(--bg);
 }
 .btn-ghost:hover::after {
   transform: scaleX(1);
@@ -225,13 +229,13 @@ a {
   transition: transform 0.3s ease-out, border-color 0.4s ease, box-shadow 0.4s ease;
   will-change: transform;
 }
-/* マウスの位置を追いかける、淡いピンクの光 */
+/* マウスの位置を追いかける、やわらかい光 */
 .tilt::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(380px circle at var(--mx) var(--my), rgba(243, 221, 227, 0.75), transparent 45%);
+  background: radial-gradient(380px circle at var(--mx) var(--my), rgba(255, 252, 246, 0.6), transparent 45%);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -250,9 +254,9 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
+  padding: 5px 12px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 2px;
   background: var(--surface);
   color: var(--muted);
   font-size: 0.85rem;
@@ -260,8 +264,13 @@ a {
 }
 .lang-switcher:hover,
 .lang-switcher:focus-within {
-  border-color: var(--rose);
-  color: var(--rose-deep);
+  border-color: var(--taupe);
+  color: var(--ink);
+}
+/* 🌐 のカラー絵文字を白黒にして、落ち着いた色合いになじませる */
+.lang-icon {
+  filter: grayscale(1);
+  opacity: 0.7;
 }
 .lang-switcher select {
   appearance: none;

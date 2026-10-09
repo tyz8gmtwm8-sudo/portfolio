@@ -143,30 +143,29 @@
     el.addEventListener("pointerleave", function () { el.style.transform = ""; });
   });
 
-  // ===== AnimatedBackground：舞い落ちる花びらと、きらめく光（AnimatedBackground.tsx） =====
+  // ===== AnimatedBackground：光の中を漂う細かいちり（AnimatedBackground.tsx） =====
   var canvas = document.querySelector("canvas.particles");
   var ctx = canvas && canvas.getContext("2d");
   if (!ctx) return;
-  var PETAL_COLORS = [
-    "rgba(232, 180, 196, 0.55)", // 桜ピンク
-    "rgba(214, 160, 180, 0.45)", // くすみピンク
-    "rgba(240, 212, 220, 0.7)",  // 淡いブラッシュ
-    "rgba(218, 190, 140, 0.4)",  // シャンパンゴールド
+  var MOTE_COLORS = [
+    "28, 26, 23",    // 黒
+    "28, 26, 23",    // 黒（多めに出るよう2回入れている）
+    "140, 123, 104", // トープ
+    "156, 127, 85",  // 真鍮色
   ];
-  var width = 0, height = 0, petals = [], sparkles = [], time = 0;
+  var width = 0, height = 0, motes = [], time = 0;
   var mouse = { x: -9999, y: -9999 };
 
-  function makePetal(startAbove) {
+  function makeMote(startBelow) {
     return {
       x: Math.random() * width,
-      y: startAbove ? -20 : Math.random() * height,
-      size: Math.random() * 6 + 5,
-      speedY: Math.random() * 0.35 + 0.2,
-      sway: Math.random() * 0.6 + 0.2,
+      y: startBelow ? height + 10 : Math.random() * height,
+      r: Math.random() * 1.3 + 0.4,
+      speedY: Math.random() * 0.18 + 0.05,
+      sway: Math.random() * 0.25 + 0.05,
       phase: Math.random() * Math.PI * 2,
-      angle: Math.random() * Math.PI * 2,
-      spin: (Math.random() - 0.5) * 0.02,
-      color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
+      color: MOTE_COLORS[Math.floor(Math.random() * MOTE_COLORS.length)],
+      baseAlpha: Math.random() * 0.25 + 0.15,
     };
   }
 
@@ -177,60 +176,34 @@
     canvas.width = width * dpr;
     canvas.height = height * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var petalCount = Math.min(36, Math.floor((width * height) / 32000));
-    petals = [];
-    for (var i = 0; i < petalCount; i++) petals.push(makePetal(false));
-    var sparkleCount = Math.min(40, Math.floor((width * height) / 28000));
-    sparkles = [];
-    for (var j = 0; j < sparkleCount; j++) {
-      sparkles.push({
-        x: Math.random() * width, y: Math.random() * height,
-        r: Math.random() * 1.4 + 0.6, phase: Math.random() * Math.PI * 2,
-      });
-    }
-  }
-
-  // 花びらの形（2本の曲線で、先が少しとがった楕円を描く）
-  function drawPetal(p) {
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.angle);
-    ctx.beginPath();
-    ctx.moveTo(0, -p.size);
-    ctx.quadraticCurveTo(p.size * 0.9, 0, 0, p.size);
-    ctx.quadraticCurveTo(-p.size * 0.9, 0, 0, -p.size);
-    ctx.fillStyle = p.color;
-    ctx.fill();
-    ctx.restore();
+    var count = Math.min(80, Math.floor((width * height) / 14000));
+    motes = [];
+    for (var i = 0; i < count; i++) motes.push(makeMote(false));
   }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
     time += 0.016;
-    // きらめく光：ゆっくり明るくなったり暗くなったりする
-    sparkles.forEach(function (s) {
-      var alpha = 0.15 + 0.45 * (0.5 + 0.5 * Math.sin(time * 1.2 + s.phase));
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(200, 165, 100, " + alpha + ")";
-      ctx.fill();
-    });
-    petals.forEach(function (p) {
-      // マウスの近くの花びらは、ふわっとよける
-      var dx = p.x - mouse.x, dy = p.y - mouse.y;
+    motes.forEach(function (m) {
+      // マウスの近くの粒は、ふわっとよける
+      var dx = m.x - mouse.x, dy = m.y - mouse.y;
       var dist = Math.hypot(dx, dy);
-      if (dist < 110 && dist > 0) {
-        p.x += (dx / dist) * 1.2;
-        p.y += (dy / dist) * 1.2;
+      if (dist < 100 && dist > 0) {
+        m.x += (dx / dist) * 0.9;
+        m.y += (dy / dist) * 0.9;
       }
-      // 下に落ちながら、左右にゆらゆら揺れて回る
-      p.y += p.speedY;
-      p.x += Math.sin(time + p.phase) * p.sway;
-      p.angle += p.spin;
-      if (p.y > height + 20) Object.assign(p, makePetal(true));
-      if (p.x < -20) p.x = width + 20;
-      if (p.x > width + 20) p.x = -20;
-      drawPetal(p);
+      // ゆっくり上へ昇りながら、左右にかすかに揺れる
+      m.y -= m.speedY;
+      m.x += Math.sin(time * 0.6 + m.phase) * m.sway;
+      if (m.y < -10) Object.assign(m, makeMote(true));
+      if (m.x < -10) m.x = width + 10;
+      if (m.x > width + 10) m.x = -10;
+      // 明るさがゆっくり変わって、光の中でまたたくように見せる
+      var alpha = m.baseAlpha * (0.6 + 0.4 * Math.sin(time + m.phase));
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(" + m.color + ", " + alpha + ")";
+      ctx.fill();
     });
     if (!reduceMotion) requestAnimationFrame(draw);
   }
