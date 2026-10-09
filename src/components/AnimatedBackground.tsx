@@ -1,9 +1,30 @@
 "use client";
 
-// 動く背景：ふわふわ動く光のかたまり（CSS）＋ マウスに反応する粒子ネットワーク（canvas）
+// 動く背景：ふんわりした光のかたまり（CSS）＋ 舞い落ちる花びらときらめく光（canvas）
 import { useEffect, useRef } from "react";
 
-type Particle = { x: number; y: number; vx: number; vy: number; r: number };
+// 花びら1枚の情報
+type Petal = {
+  x: number;
+  y: number;
+  size: number;     // 大きさ
+  speedY: number;   // 落ちる速さ
+  sway: number;     // 左右にゆれる幅
+  phase: number;    // ゆれのタイミング（花びらごとにずらす）
+  angle: number;    // 傾き
+  spin: number;     // 回転の速さ
+  color: string;
+};
+
+// きらめく光の粒
+type Sparkle = { x: number; y: number; r: number; phase: number };
+
+const PETAL_COLORS = [
+  "rgba(232, 180, 196, 0.55)", // 桜ピンク
+  "rgba(214, 160, 180, 0.45)", // くすみピンク
+  "rgba(240, 212, 220, 0.7)",  // 淡いブラッシュ
+  "rgba(218, 190, 140, 0.4)",  // シャンパンゴールド
+];
 
 export default function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,9 +39,23 @@ export default function AnimatedBackground() {
 
     let width = 0;
     let height = 0;
-    let particles: Particle[] = [];
+    let petals: Petal[] = [];
+    let sparkles: Sparkle[] = [];
     const mouse = { x: -9999, y: -9999 };
     let frameId = 0;
+    let time = 0;
+
+    const makePetal = (startAbove: boolean): Petal => ({
+      x: Math.random() * width,
+      y: startAbove ? -20 : Math.random() * height,
+      size: Math.random() * 6 + 5,
+      speedY: Math.random() * 0.35 + 0.2,
+      sway: Math.random() * 0.6 + 0.2,
+      phase: Math.random() * Math.PI * 2,
+      angle: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.02,
+      color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
+    });
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -30,57 +65,66 @@ export default function AnimatedBackground() {
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // 画面の広さに合わせて粒子の数を決める
-      const count = Math.min(90, Math.floor((width * height) / 16000));
-      particles = Array.from({ length: count }, () => ({
+      // 画面の広さに合わせて数を決める（多すぎるとうるさいので控えめに）
+      const petalCount = Math.min(36, Math.floor((width * height) / 32000));
+      petals = Array.from({ length: petalCount }, () => makePetal(false));
+      const sparkleCount = Math.min(40, Math.floor((width * height) / 28000));
+      sparkles = Array.from({ length: sparkleCount }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        r: Math.random() * 1.8 + 0.6,
+        r: Math.random() * 1.4 + 0.6,
+        phase: Math.random() * Math.PI * 2,
       }));
+    };
+
+    // 花びらの形（2本の曲線で、先が少しとがった楕円を描く）
+    const drawPetal = (p: Petal) => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.beginPath();
+      ctx.moveTo(0, -p.size);
+      ctx.quadraticCurveTo(p.size * 0.9, 0, 0, p.size);
+      ctx.quadraticCurveTo(-p.size * 0.9, 0, 0, -p.size);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      ctx.restore();
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
+      time += 0.016;
 
-      for (const p of particles) {
-        // マウスの近くの粒子は少し押し出される
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 120 && dist > 0) {
-          p.x += (dx / dist) * 1.5;
-          p.y += (dy / dist) * 1.5;
-        }
-
-        p.x += p.vx;
-        p.y += p.vy;
-        // 画面の端で跳ね返る
-        if (p.x < 0 || p.x > width) p.vx *= -1;
-        if (p.y < 0 || p.y > height) p.vy *= -1;
-
+      // きらめく光：ゆっくり明るくなったり暗くなったりする
+      for (const s of sparkles) {
+        const alpha = 0.15 + 0.45 * (0.5 + 0.5 * Math.sin(time * 1.2 + s.phase));
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(180, 200, 255, 0.8)";
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200, 165, 100, ${alpha})`;
         ctx.fill();
       }
 
-      // 近い粒子どうしを線でつなぐ
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i];
-          const b = particles[j];
-          const d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < 130) {
-            ctx.strokeStyle = `rgba(140, 120, 255, ${0.25 * (1 - d / 130)})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
+      for (const p of petals) {
+        // マウスの近くの花びらは、ふわっとよける
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 110 && dist > 0) {
+          p.x += (dx / dist) * 1.2;
+          p.y += (dy / dist) * 1.2;
         }
+
+        // 下に落ちながら、左右にゆらゆら揺れて回る
+        p.y += p.speedY;
+        p.x += Math.sin(time + p.phase) * p.sway;
+        p.angle += p.spin;
+
+        // 画面の下まで落ちたら、上からまた降らせる
+        if (p.y > height + 20) Object.assign(p, makePetal(true));
+        if (p.x < -20) p.x = width + 20;
+        if (p.x > width + 20) p.x = -20;
+
+        drawPetal(p);
       }
 
       if (!reduceMotion) frameId = requestAnimationFrame(draw);

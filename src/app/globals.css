@@ -1,13 +1,21 @@
-/* ===== 色などの共通設定（CSS変数） ===== */
+/* ===== 色などの共通設定（CSS変数） =====
+   コンセプト：白〜アイボリーの紙に、くすみピンクとゴールドを差した上品なデザイン */
 :root {
-  --bg: #07070f;
-  --surface: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.1);
-  --text: #e6e8f2;
-  --muted: #9aa0b8;
-  --accent: #7c5cff;
-  --accent-2: #00d4ff;
-  --accent-3: #ff4ecd;
+  --bg: #fbf7f4;          /* アイボリー（少し温かみのある白） */
+  --surface: rgba(255, 255, 255, 0.72); /* カードなどの白い面（少し透ける） */
+  --border: rgba(158, 95, 118, 0.18);   /* ピンクがかった細い線 */
+  --text: #3e3236;        /* 真っ黒ではない、深いプラムブラウン */
+  --muted: #86767b;       /* 説明文などの控えめな文字 */
+  --rose: #c48a9e;        /* くすみピンク（メインの色） */
+  --rose-deep: #9e5f76;   /* 濃いくすみピンク（文字やボタン用） */
+  --gold: #b8975a;        /* シャンパンゴールド（アクセント） */
+  --blush: #f3dde3;       /* 淡いブラッシュピンク（背景の光など） */
+
+  /* フォント：見出しは明朝体、本文はやわらかいゴシック体 */
+  --font-display: var(--font-cormorant), var(--font-shippori), "Hiragino Mincho ProN", serif;
+  --font-body: var(--font-zen-kaku), "Hiragino Sans", system-ui, sans-serif;
+
+  color-scheme: light;
 }
 
 * {
@@ -23,8 +31,8 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  line-height: 1.6;
+  font-family: var(--font-body);
+  line-height: 1.8;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -35,8 +43,8 @@ a {
 }
 
 ::selection {
-  background: var(--accent);
-  color: white;
+  background: var(--blush);
+  color: var(--rose-deep);
 }
 
 /* ===== 動く背景 ===== */
@@ -48,41 +56,37 @@ a {
   pointer-events: none;
 }
 
+/* ふんわりした光のかたまり（ピンク・ゴールド・ブラッシュ） */
 .blob {
   position: absolute;
   width: 45vmax;
   height: 45vmax;
   border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.35;
-  animation: float 22s ease-in-out infinite alternate;
+  filter: blur(100px);
+  opacity: 0.55;
+  animation: float 28s ease-in-out infinite alternate;
 }
-.blob1 { background: var(--accent);   top: -15%; left: -10%; }
-.blob2 { background: var(--accent-2); bottom: -20%; right: -10%; animation-delay: -7s; animation-duration: 26s; }
-.blob3 { background: var(--accent-3); top: 40%; left: 40%; width: 30vmax; height: 30vmax; opacity: 0.2; animation-delay: -14s; }
+.blob1 { background: var(--blush); top: -15%; left: -10%; }
+.blob2 { background: #f1e3c8;      bottom: -20%; right: -10%; animation-delay: -9s; animation-duration: 32s; }
+.blob3 { background: #ecd3e0;      top: 40%; left: 40%; width: 30vmax; height: 30vmax; opacity: 0.45; animation-delay: -16s; }
 
 @keyframes float {
   0%   { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(8vw, 6vh) scale(1.1); }
-  66%  { transform: translate(-6vw, 10vh) scale(0.95); }
-  100% { transform: translate(4vw, -6vh) scale(1.05); }
+  33%  { transform: translate(6vw, 5vh) scale(1.08); }
+  66%  { transform: translate(-5vw, 8vh) scale(0.96); }
+  100% { transform: translate(3vw, -5vh) scale(1.04); }
 }
 
-/* うっすら見えるグリッド線 */
+/* 紙のような、ごくうっすらした質感 */
 .grid {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-  animation: gridMove 20s linear infinite;
-}
-@keyframes gridMove {
-  to { background-position: 60px 60px; }
+  background-image: radial-gradient(rgba(158, 95, 118, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
 }
 
+/* 花びらが舞う canvas */
 .particles {
   position: absolute;
   inset: 0;
@@ -90,14 +94,14 @@ a {
   height: 100%;
 }
 
-/* ===== 色が流れるグラデーション文字 ===== */
+/* ===== ピンクとゴールドがゆっくり流れる文字 ===== */
 .gradient-text {
-  background: linear-gradient(90deg, var(--accent-2), var(--accent), var(--accent-3), var(--accent-2));
+  background: linear-gradient(90deg, var(--rose-deep), var(--rose), var(--gold), var(--rose-deep));
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 6s linear infinite;
+  animation: shimmer 10s linear infinite;
 }
 @keyframes shimmer {
   to { background-position: 300% 0; }
@@ -105,27 +109,28 @@ a {
 
 /* ===== タイピング文字のカーソル ===== */
 .typing {
-  color: var(--accent-2);
-  font-family: var(--font-geist-mono), monospace;
+  color: var(--rose-deep);
+  font-family: var(--font-display);
+  font-style: italic;
 }
 .caret {
   display: inline-block;
-  width: 3px;
+  width: 1.5px;
   height: 1em;
   margin-left: 4px;
   vertical-align: -0.12em;
-  background: var(--accent-2);
-  animation: blink 1s steps(1) infinite;
+  background: var(--gold);
+  animation: blink 1.1s steps(1) infinite;
 }
 @keyframes blink {
   50% { opacity: 0; }
 }
 
-/* ===== スクロールで出てくるアニメーション ===== */
+/* ===== スクロールで出てくるアニメーション（ゆっくり上品に） ===== */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(24px);
+  transition: opacity 1.1s ease, transform 1.1s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .reveal.is-visible {
   opacity: 1;
@@ -138,26 +143,27 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 28px;
+  padding: 13px 30px;
   border-radius: 999px;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   overflow: hidden;
   isolation: isolate;
-  transition: transform 0.2s ease-out, box-shadow 0.3s ease, color 0.3s ease;
+  transition: transform 0.2s ease-out, box-shadow 0.4s ease, color 0.4s ease;
 }
 .btn-label {
   position: relative;
   z-index: 2;
 }
 
-/* メインボタン：グラデーション背景 + ホバーで光る */
+/* メインボタン：くすみピンクのグラデーション + ホバーでやわらかく光る */
 .btn-primary {
   color: white;
-  background: linear-gradient(135deg, var(--accent), var(--accent-3));
-  box-shadow: 0 0 0 rgba(124, 92, 255, 0);
+  background: linear-gradient(135deg, var(--rose-deep), var(--rose));
+  box-shadow: 0 8px 20px -12px rgba(158, 95, 118, 0.6);
 }
 .btn-primary:hover {
-  box-shadow: 0 10px 40px -5px rgba(124, 92, 255, 0.7), 0 0 20px rgba(255, 78, 205, 0.4);
+  box-shadow: 0 14px 34px -10px rgba(158, 95, 118, 0.55), 0 0 18px rgba(184, 151, 90, 0.3);
 }
 
 /* ホバーすると光の筋がスーッと横切る */
@@ -168,21 +174,21 @@ a {
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.55), transparent);
   transform: skewX(-20deg);
   z-index: 1;
 }
 .btn:hover::before {
-  animation: shine 0.75s ease;
+  animation: shine 0.9s ease;
 }
 @keyframes shine {
   to { left: 125%; }
 }
 
-/* 枠線ボタン：ホバーで中が塗りつぶされる */
+/* 枠線ボタン：ホバーで淡いピンクに染まる */
 .btn-ghost {
-  color: var(--text);
-  border: 1px solid var(--border);
+  color: var(--rose-deep);
+  border: 1px solid var(--rose);
   background: var(--surface);
   backdrop-filter: blur(8px);
 }
@@ -190,25 +196,21 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  background: var(--blush);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+  transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
   z-index: 0;
-}
-.btn-ghost:hover {
-  color: white;
-  border-color: transparent;
 }
 .btn-ghost:hover::after {
   transform: scaleX(1);
 }
 
 .btn:active {
-  scale: 0.95;
+  scale: 0.96;
 }
 .btn:focus-visible {
-  outline: 2px solid var(--accent-2);
+  outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
 
@@ -219,23 +221,27 @@ a {
   --mx: 50%;
   --my: 50%;
   position: relative;
-  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+  transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.3s ease-out, border-color 0.4s ease, box-shadow 0.4s ease;
   will-change: transform;
 }
-/* マウスの位置を追いかける光 */
+/* マウスの位置を追いかける、淡いピンクの光 */
 .tilt::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(400px circle at var(--mx) var(--my), rgba(124, 92, 255, 0.18), transparent 40%);
+  background: radial-gradient(380px circle at var(--mx) var(--my), rgba(243, 221, 227, 0.75), transparent 45%);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
   pointer-events: none;
 }
 .tilt:hover::before {
   opacity: 1;
+}
+/* 光の上に中身が来るようにする */
+.tilt > * {
+  position: relative;
 }
 
 /* ===== 言語の切り替えメニュー ===== */
@@ -244,7 +250,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
@@ -254,8 +260,8 @@ a {
 }
 .lang-switcher:hover,
 .lang-switcher:focus-within {
-  border-color: var(--accent);
-  color: var(--text);
+  border-color: var(--rose);
+  color: var(--rose-deep);
 }
 .lang-switcher select {
   appearance: none;
@@ -266,7 +272,6 @@ a {
   cursor: pointer;
   outline: none;
 }
-/* 選択肢の一覧は暗い背景で表示する */
 .lang-switcher option {
   background: var(--bg);
   color: var(--text);

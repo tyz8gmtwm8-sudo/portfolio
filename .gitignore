@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Artifact用に書き出したHTML（build.py で毎回作り直すので保存しない）
+/scripts/artifact/out/

@@ -41,8 +41,7 @@ export default async function Home() {
       {/* ナビゲーション */}
       <header className={styles.nav}>
         <a href="#top" className={styles.logo}>
-          <span className={styles.logoBracket}>&lt;</span>dev
-          <span className={styles.logoBracket}>/&gt;</span>
+          Seina<span className={styles.logoMark} aria-hidden="true">✦</span>Tsuboi
         </a>
         <div className={styles.navRight}>
           <nav className={styles.links}>
@@ -59,12 +58,13 @@ export default async function Home() {
         <section className={styles.hero}>
           <Reveal>
             <p className={styles.eyebrow}>
-              <span className={styles.wave}>👋</span> <T k="hero.hello" />
+              <span className={styles.eyebrowLine} aria-hidden="true" />
+              <T k="hero.hello" />
             </p>
           </Reveal>
           <Reveal delay={100}>
             <h1 className={styles.title}>
-              <span className="gradient-text">{user?.name ?? GITHUB_USERNAME}</span>
+              <span className="gradient-text"><T k="hero.name" /></span>
             </h1>
           </Reveal>
           <Reveal delay={200}>
@@ -126,7 +126,7 @@ export default async function Home() {
                 <Reveal key={repo.id} delay={i * 100}>
                   <TiltCard className={styles.card}>
                     <div className={styles.cardTop}>
-                      <span className={styles.folder} aria-hidden="true">📁</span>
+                      <span className={styles.folder} aria-hidden="true">✦</span>
                       <div className={styles.cardLinks}>
                         {repo.homepage && (
                           <LabeledLink href={repo.homepage} target="_blank" rel="noopener noreferrer" labelKey="projects.liveDemo">
@@ -187,7 +187,10 @@ export default async function Home() {
                 </div>
               )}
               <div className={styles.profileBody}>
-                <h3 className={styles.profileName}>@{GITHUB_USERNAME}</h3>
+                <h3 className={styles.profileName}>
+                  <T k="hero.name" />
+                  <span className={styles.handle}>@{GITHUB_USERNAME}</span>
+                </h3>
                 {user?.bio && <p className={styles.text}>{user.bio}</p>}
                 <div className={styles.stats}>
                   <div><strong>{user?.public_repos ?? repos.length}</strong><span><T k="github.repos" /></span></div>
