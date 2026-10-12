@@ -2,6 +2,16 @@
 // 取得結果は1時間キャッシュされるので、APIの回数制限（1時間60回）にかかりにくい
 
 export const GITHUB_USERNAME = "tyz8gmtwm8-sudo";
+export const GITHUB_URL = `https://github.com/${GITHUB_USERNAME}`;
+
+// プログラミング言語ごとの色（GitHubの配色に近いもの）
+export const LANGUAGE_COLORS: Record<string, string> = {
+  TypeScript: "#3178c6",
+  JavaScript: "#f1e05a",
+  HTML: "#e34c26",
+  CSS: "#663399",
+  Python: "#3572A5",
+};
 
 export type GitHubUser = {
   login: string;
