@@ -1,84 +1,3 @@
-/* ===== ナビゲーション ===== */
-.nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px clamp(16px, 5vw, 64px);
-  background: rgba(237, 230, 219, 0.82);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-  animation: slideDown 1s ease both;
-}
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-}
-
-/* ロゴ：筆記体のような斜めの明朝体 */
-.logo {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 500;
-  font-size: 1.35rem;
-  letter-spacing: 0.02em;
-  color: var(--text);
-  transition: letter-spacing 0.4s ease;
-}
-.logo:hover {
-  letter-spacing: 0.08em;
-}
-.logoMark {
-  display: inline-block;
-  margin: 0 0.35em;
-  font-style: normal;
-  font-size: 0.7em;
-  color: var(--gold);
-  vertical-align: 0.15em;
-}
-
-.links {
-  display: flex;
-  gap: clamp(14px, 3vw, 32px);
-}
-/* リンクと言語メニューを横に並べる */
-.navRight {
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, 3vw, 32px);
-}
-/* リンクの下線がホバーで左から伸びる（細いゴールドの線） */
-.links a {
-  position: relative;
-  color: var(--muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  transition: color 0.3s ease;
-}
-.links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 100%;
-  height: 1px;
-  background: var(--ink);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.4s ease;
-}
-.links a:hover {
-  color: var(--ink);
-}
-.links a:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
 /* ===== メイン ===== */
 .main {
   max-width: 1100px;
@@ -445,24 +364,115 @@
   border-top: 1px solid var(--border);
 }
 
-/* スマホ幅では、ナビが入りきらないときに2段に折り返す */
-@media (max-width: 600px) {
-  .nav {
-    flex-wrap: wrap;
-    row-gap: 10px;
-  }
-  .navRight {
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-}
-
-/* スマホ幅ではナビのリンクを少し小さく */
+/* スマホ幅では、更新日を左寄せにする */
 @media (max-width: 480px) {
-  .links a {
-    font-size: 0.85rem;
-  }
   .updated {
     margin-left: 0;
   }
+}
+
+/* ===== 複数ページ化で追加したスタイル ===== */
+
+/* 自己紹介・作品・お問い合わせページの最初のセクション
+   （固定ヘッダーに隠れないよう、上に余白をとる） */
+.pageTop {
+  padding-top: 160px;
+}
+
+/* 「もっと見る →」などのリンクを右下に置く */
+.more {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 32px;
+}
+
+/* ホームの最後の「お問い合わせ」への案内 */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: clamp(28px, 5vw, 56px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  backdrop-filter: blur(10px);
+}
+
+/* ===== お問い合わせフォーム ===== */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 640px;
+  margin-top: 36px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field label {
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.field textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(28, 26, 23, 0.08);
+}
+/* 入力に問題がある欄は赤みのある枠にする */
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: #a8483a;
+}
+.fieldError {
+  color: #a8483a;
+  font-size: 0.85rem;
+}
+/* ロボット対策の隠し入力欄（人には見えない） */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.submitButton {
+  align-self: flex-start;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+/* 送信結果のメッセージ */
+.status {
+  padding: 14px 18px;
+  border-left: 2px solid var(--gold);
+  background: var(--surface);
+  color: var(--text);
+}
+.statusError {
+  border-left-color: #a8483a;
 }

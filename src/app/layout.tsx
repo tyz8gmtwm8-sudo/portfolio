@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Shippori_Mincho, Zen_Kaku_Gothic_New } from "next/font/google";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import LanguageProvider from "@/components/LanguageProvider";
+import LanguageProvider, { T } from "@/components/LanguageProvider";
+import SiteHeader from "@/components/SiteHeader";
 import "./globals.css";
+import styles from "./page.module.css";
 
 // 見出し用（英字）：細くて上品な明朝体
 const cormorant = Cormorant_Garamond({
@@ -27,7 +29,11 @@ const zenKaku = Zen_Kaku_Gothic_New({
 });
 
 export const metadata: Metadata = {
-  title: "Seina Tsuboi | 坪井聖奈 Portfolio",
+  // 各ページで title を指定すると「About | Seina Tsuboi」のように %s の部分に入る
+  title: {
+    default: "Seina Tsuboi | 坪井聖奈 Portfolio",
+    template: "%s | Seina Tsuboi",
+  },
   description: "My coding portfolio and the projects I'm working on.",
 };
 
@@ -35,13 +41,23 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      // ページ移動のときは、なめらかスクロールを一時的に止めてすぐ一番上に移動する
+      data-scroll-behavior="smooth"
       className={`${cormorant.variable} ${shipporiMincho.variable} ${zenKaku.variable}`}
     >
       <body>
         {/* 全ページ共通の動く背景 */}
         <AnimatedBackground />
         {/* 選んだ言語をサイト全体で使えるようにする */}
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          {/* 全ページ共通のヘッダー */}
+          <SiteHeader />
+          {children}
+          {/* 全ページ共通のフッター */}
+          <footer className={styles.footer}>
+            <T k="footer.builtWith" /> · © {new Date().getFullYear()}
+          </footer>
+        </LanguageProvider>
       </body>
     </html>
   );

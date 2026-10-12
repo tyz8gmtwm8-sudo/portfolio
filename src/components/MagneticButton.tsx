@@ -2,6 +2,7 @@
 
 // マウスを近づけると、磁石のように少し引き寄せられるボタン（リンク）
 import { useRef, type ReactNode, type PointerEvent } from "react";
+import Link from "next/link";
 
 export default function MagneticButton({
   href,
@@ -29,16 +30,19 @@ export default function MagneticButton({
     if (ref.current) ref.current.style.transform = "";
   };
 
-  return (
-    <a
-      ref={ref}
-      href={href}
-      className={`btn btn-${variant}`}
-      onPointerMove={onMove}
-      onPointerLeave={onLeave}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-    >
-      <span className="btn-label">{children}</span>
-    </a>
+  const props = {
+    ref,
+    href,
+    className: `btn btn-${variant}`,
+    onPointerMove: onMove,
+    onPointerLeave: onLeave,
+    children: <span className="btn-label">{children}</span>,
+  };
+
+  // 外部サイトは新しいタブで開く。サイト内のページは Link で素早く移動する
+  return external ? (
+    <a {...props} target="_blank" rel="noopener noreferrer" />
+  ) : (
+    <Link {...props} />
   );
 }
